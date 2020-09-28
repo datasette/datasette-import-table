@@ -31,5 +31,5 @@ setup(
     install_requires=["datasette", "httpx", "sqlite-utils"],
     extras_require={"test": ["pytest", "pytest-asyncio", "httpx", "pytest-httpx"]},
     tests_require=["datasette-import-table[test]"],
-    package_data={"datasette_import_tables": ["templates/*.html"]},
+    package_data={"datasette_import_table": ["templates/*.html"]},
 )
