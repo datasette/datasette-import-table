@@ -125,3 +125,58 @@ def register_routes():
     return [
         (r"^/-/import-table", import_table),
     ]
+
+
+JS = """
+const IMPORT_TABLE_CSS = `
+progress {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    width: 100%;
+    height: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+progress::-webkit-progress-bar {
+    background-color: #ddd;
+}
+progress::-webkit-progress-value {
+    background-color: #124d77;
+}
+`;
+
+(function() {
+    if (!location.search.startsWith("?_import_expected_rows")) {
+        return;
+    }
+    const total = parseInt(location.search.split("?_import_expected_rows=")[1]);
+    const style = document.createElement("style");
+    style.innerHTML = IMPORT_TABLE_CSS;
+    document.head.appendChild(style);
+    const progress = document.createElement('progress');
+    progress.setAttribute('value', 0);
+    progress.setAttribute('max', total);
+    progress.innerHTML = 'Importing...';
+    const table = document.querySelector('table.rows-and-columns');
+    table.parentNode.insertBefore(progress, table);
+    /* Start polling */
+    let nextUrl = location.pathname + ".json?_size=0";
+    function pollNext() {
+        fetch(nextUrl).then(r => r.json()).then(d => {
+            const current = d.filtered_table_rows_count;
+            progress.setAttribute('value', current);
+            if (current < total) {
+                setTimeout(pollNext, 2000);
+            } else {
+                progress.parentNode.removeChild(progress);
+            }
+        });
+    }
+    pollNext();
+})();
+"""
+
+@hookimpl
+def extra_body_script():
+    return JS
