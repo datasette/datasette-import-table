@@ -101,7 +101,7 @@ class LoadError(Exception):
 
 
 async def load_first_page(url):
-    url = url + ".json?_shape=objects"
+    url = url + ".json?_shape=objects&_size=max"
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         if response.status_code != 200:

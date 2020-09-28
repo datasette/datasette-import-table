@@ -25,7 +25,7 @@ async def test_plugin_is_installed():
 async def test_import_table(tmpdir, httpx_mock):
     db_path = str(tmpdir / "test.db")
     httpx_mock.add_response(
-        url="http://example/some/table.json?_shape=objects",
+        url="http://example/some/table.json?_shape=objects&_size=max",
         json={
             "table": "mytable",
             "rows": [{"foo": "bar"}],
