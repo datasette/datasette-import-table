@@ -7,8 +7,6 @@
 
 Datasette plugin for importing tables from other Datasette instances
 
-**Warning: alpha software**. This doesn't yet have any permissions checking code.
-
 ## Installation
 
 Install this plugin in the same environment as Datasette.
@@ -18,6 +16,10 @@ Install this plugin in the same environment as Datasette.
 ## Usage
 
 Visit `/-/import-table` for the interface. Paste in the URL to a table page on another Datasette instance and click the button to import that table.
+
+By default only [the root actor](https://datasette.readthedocs.io/en/stable/authentication.html#using-the-root-actor) can access the page - so you'll need to run Datasette with the `--root` option and click on the link shown in the terminal to sign in and access the page.
+
+The `import-table` permission governs access. You can use permission plugins such as [datasette-permissions-sql](https://github.com/simonw/datasette-permissions-sql) to grant additional access to the write interface.
 
 ## Development
 

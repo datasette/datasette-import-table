@@ -1,12 +1,23 @@
 import asyncio
 from datasette import hookimpl
-from datasette.utils.asgi import Response
+from datasette.utils.asgi import Response, Forbidden
 import httpx
 import sqlite_utils
 from urllib.parse import quote_plus
 
 
+@hookimpl
+def permission_allowed(actor, action):
+    if action == "import-table" and actor and actor.get("id") == "root":
+        return True
+
+
 async def import_table(request, datasette):
+    if not await datasette.permission_allowed(
+        request.actor, "import-table", default=False
+    ):
+        raise Forbidden("Permission denied for import-table")
+
     mutable_databases = [db for db in datasette.databases.values() if db.is_mutable]
     error = None
 

@@ -1,6 +1,7 @@
 from datasette.app import Datasette
 import datasette_import_table
 import pytest
+import sqlite_utils
 import json
 import httpx
 
@@ -21,9 +22,8 @@ async def test_plugin_is_installed():
 
 
 @pytest.mark.asyncio
-async def test_import_table(tmp_path_factory, httpx_mock):
-    db_directory = tmp_path_factory.mktemp("dbs")
-    db_path = db_directory / "test.db"
+async def test_import_table(tmpdir, httpx_mock):
+    db_path = str(tmpdir / "test.db")
     httpx_mock.add_response(
         url="http://example/some/table.json?_shape=objects",
         json={
@@ -36,11 +36,13 @@ async def test_import_table(tmp_path_factory, httpx_mock):
         headers={"content-type": "application/json"},
     )
 
-    app = Datasette([str(db_path)], memory=True).app()
-    async with httpx.AsyncClient(app=app) as client:
-        response = await client.get("http://localhost/-/import-table")
+    datasette = Datasette([db_path])
+    cookies = {"ds_actor": datasette.sign({"a": {"id": "root"}}, "actor")}
+    async with httpx.AsyncClient(app=datasette.app()) as client:
+        response = await client.get("http://localhost/-/import-table", cookies=cookies)
         assert 200 == response.status_code
         csrftoken = response.cookies["ds_csrftoken"]
+        cookies["ds_csrftoken"] = csrftoken
         response = await client.post(
             "http://localhost/-/import-table",
             data={
@@ -48,8 +50,25 @@ async def test_import_table(tmp_path_factory, httpx_mock):
                 "csrftoken": csrftoken,
             },
             allow_redirects=False,
+            cookies=cookies,
         )
         assert response.status_code == 302
-        assert (
-            response.headers["location"] == "/:memory:/mytable?_import_expected_rows=1"
+        assert response.headers["location"] == "/test/mytable?_import_expected_rows=1"
+
+
+@pytest.mark.asyncio
+async def test_permissions(tmpdir):
+    path = str(tmpdir / "test.db")
+    ds = Datasette([path])
+    app = ds.app()
+    async with httpx.AsyncClient(app=app) as client:
+        response = await client.get("http://localhost/-/import-table")
+        assert 403 == response.status_code
+    # Now try with a root actor
+    async with httpx.AsyncClient(app=app) as client2:
+        response2 = await client2.get(
+            "http://localhost/-/import-table",
+            cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
+            allow_redirects=False,
         )
+        assert 403 != response2.status_code
