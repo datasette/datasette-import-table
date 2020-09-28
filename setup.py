@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-VERSION = "0.1a0"
+VERSION = "0.1a1"
 
 
 def get_long_description():
@@ -31,5 +31,5 @@ setup(
     install_requires=["datasette", "httpx", "sqlite-utils"],
     extras_require={"test": ["pytest", "pytest-asyncio", "httpx", "pytest-httpx"]},
     tests_require=["datasette-import-table[test]"],
-    package_data={"datasette_edit_tables": ["templates/*.html"]},
+    package_data={"datasette_import_tables": ["templates/*.html"]},
 )
