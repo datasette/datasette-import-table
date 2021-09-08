@@ -28,8 +28,8 @@
     </p>
     {% if databases|length > 1 %}
     <p><label style="width: auto">Database to create table in: <select>
-        {% for database in databases %}
-            <option>{{ database }}</option>
+        {% for database_name in databases %}
+            <option{% if database == database_name %} selected="selected"{% endif %}>{{ database_name }}</option>
         {% endfor %}
     </select></label></p>
 {% endif %}

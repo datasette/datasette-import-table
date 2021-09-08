@@ -3,7 +3,7 @@ from datasette import hookimpl
 from datasette.utils.asgi import Response, Forbidden
 import httpx
 import sqlite_utils
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlencode
 
 
 @hookimpl
@@ -12,13 +12,55 @@ def permission_allowed(actor, action):
         return True
 
 
+@hookimpl
+def menu_links(datasette, actor):
+    async def inner():
+        if await datasette.permission_allowed(actor, "import-table", default=False):
+            return [
+                {
+                    "href": datasette.urls.path("/-/import-table"),
+                    "label": "Import table",
+                },
+            ]
+
+    return inner
+
+
+@hookimpl
+def database_actions(datasette, actor, database):
+    async def inner():
+        if (
+            await datasette.permission_allowed(actor, "import-table", default=False)
+            and database != "_internal"
+        ):
+            return [
+                {
+                    "href": datasette.urls.path(
+                        "/-/import-table?"
+                        + urlencode(
+                            {
+                                "database": database,
+                            }
+                        )
+                    ),
+                    "label": "Import table",
+                },
+            ]
+
+    return inner
+
+
 async def import_table(request, datasette):
     if not await datasette.permission_allowed(
         request.actor, "import-table", default=False
     ):
         raise Forbidden("Permission denied for import-table")
 
-    mutable_databases = [db for db in datasette.databases.values() if db.is_mutable]
+    mutable_databases = [
+        db
+        for db in datasette.databases.values()
+        if db.is_mutable and db.name != "_internal"
+    ]
     error = None
 
     if request.method == "POST":
@@ -90,6 +132,7 @@ async def import_table(request, datasette):
             {
                 "databases": [m.name for m in mutable_databases],
                 "error": error,
+                "database": request.args.get("database"),
             },
             request=request,
         )
@@ -176,6 +219,7 @@ progress::-webkit-progress-value {
     pollNext();
 })();
 """
+
 
 @hookimpl
 def extra_body_script():
