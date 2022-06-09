@@ -30,6 +30,6 @@ setup(
     entry_points={"datasette": ["import_table = datasette_import_table"]},
     install_requires=["datasette", "httpx", "sqlite-utils"],
     extras_require={"test": ["pytest", "pytest-asyncio", "httpx", "pytest-httpx"]},
-    tests_require=["datasette-import-table[test]"],
     package_data={"datasette_import_table": ["templates/*.html"]},
+    python_requires=">=3.7",
 )
