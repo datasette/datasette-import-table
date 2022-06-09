@@ -28,7 +28,7 @@ setup(
     version=VERSION,
     packages=["datasette_import_table"],
     entry_points={"datasette": ["import_table = datasette_import_table"]},
-    install_requires=["datasette", "httpx", "sqlite-utils"],
+    install_requires=["datasette>= 0.59", "httpx", "sqlite-utils"],
     extras_require={"test": ["pytest", "pytest-asyncio", "httpx", "pytest-httpx"]},
     package_data={"datasette_import_table": ["templates/*.html"]},
     python_requires=">=3.7",

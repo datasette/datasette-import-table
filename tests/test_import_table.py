@@ -49,7 +49,6 @@ async def test_import_table(tmpdir, httpx_mock):
                 "url": "http://example/some/table",
                 "csrftoken": csrftoken,
             },
-            allow_redirects=False,
             cookies=cookies,
         )
         assert response.status_code == 302
@@ -87,6 +86,5 @@ async def test_permissions(tmpdir):
         response2 = await client2.get(
             "http://localhost/-/import-table",
             cookies={"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")},
-            allow_redirects=False,
         )
         assert 403 != response2.status_code
