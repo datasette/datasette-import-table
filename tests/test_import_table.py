@@ -61,6 +61,7 @@ async def test_import_table_multiple_databases(tmpdir):
     cookies = {"ds_actor": ds.sign({"a": {"id": "root"}}, "actor")}
     response = await ds.client.get("/-/import-table", cookies=cookies)
     assert response.status_code == 200
+    assert '<select name="database">' in response.text
     assert "<option>test</option>" in response.text
     assert "<option>test2</option>" in response.text
     response2 = await ds.client.get("/-/import-table?database=test2", cookies=cookies)
