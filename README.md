@@ -1,9 +1,9 @@
 # datasette-import-table
 
 [![PyPI](https://img.shields.io/pypi/v/datasette-import-table.svg)](https://pypi.org/project/datasette-import-table/)
-[![Changelog](https://img.shields.io/github/v/release/simonw/datasette-import-table?include_prereleases&label=changelog)](https://github.com/simonw/datasette-import-table/releases)
-[![Tests](https://github.com/simonw/datasette-import-table/workflows/Test/badge.svg)](https://github.com/simonw/datasette-import-table/actions?query=workflow%3ATest)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/simonw/datasette-import-table/blob/main/LICENSE)
+[![Changelog](https://img.shields.io/github/v/release/datasette/datasette-import-table?include_prereleases&label=changelog)](https://github.com/datasette/datasette-import-table/releases)
+[![Tests](https://github.com/datasette/datasette-import-table/workflows/Test/badge.svg)](https://github.com/datasette/datasette-import-table/actions?query=workflow%3ATest)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/datasette/datasette-import-table/blob/main/LICENSE)
 
 Datasette plugin for importing tables from other Datasette instances
 
